@@ -94,7 +94,7 @@ function assertVisit(input: string, expected: VisitorCallback[], expectedErrors:
 		onArrayEnd: noArgHalder('onArrayEnd'),
 		onLiteralValue: oneArgHalderWithPath('onLiteralValue'),
 		onSeparator: oneArgHalder('onSeparator'),
-		onComment: noArgHalder('onComment'),
+		onComment: oneArgHalderWithPath('onComment'),
 		onError: (error: ParseErrorCode, offset: number, length: number, startLine: number, startCharacter: number) => {
 			errors.push({ error, offset, length, startLine, startCharacter });
 		}
@@ -518,20 +518,20 @@ suite('JSON', () => {
 
 	test('visit: comment', () => {
 		assertVisit('/* g */ { "foo": //f\n"bar" }', [
-			{ id: 'onComment', text: '/* g */', startLine: 0, startCharacter: 0 },
+			{ id: 'onComment', text: '/* g */', startLine: 0, startCharacter: 0, arg: '/* g */', path: [] },
 			{ id: 'onObjectBegin', text: '{', startLine: 0, startCharacter: 8, path: [] },
 			{ id: 'onObjectProperty', text: '"foo"', startLine: 0, startCharacter: 10, arg: 'foo', path: [] },
 			{ id: 'onSeparator', text: ':', startLine: 0, startCharacter: 15, arg: ':' },
-			{ id: 'onComment', text: '//f', startLine: 0, startCharacter: 17 },
+			{ id: 'onComment', text: '//f', startLine: 0, startCharacter: 17, arg: '//f', path: ['foo'] },
 			{ id: 'onLiteralValue', text: '"bar"', startLine: 1, startCharacter: 0, arg: 'bar', path: ['foo'] },
 			{ id: 'onObjectEnd', text: '}', startLine: 1, startCharacter: 6 },
 		]);
 		assertVisit('/* g\r\n */ { "foo": //f\n"bar" }', [
-			{ id: 'onComment', text: '/* g\r\n */', startLine: 0, startCharacter: 0 },
+			{ id: 'onComment', text: '/* g\r\n */', startLine: 0, startCharacter: 0, arg: '/* g\r\n */', path: [] },
 			{ id: 'onObjectBegin', text: '{', startLine: 1, startCharacter: 4, path: [] },
 			{ id: 'onObjectProperty', text: '"foo"', startLine: 1, startCharacter: 6, arg: 'foo', path: [] },
 			{ id: 'onSeparator', text: ':', startLine: 1, startCharacter: 11, arg: ':' },
-			{ id: 'onComment', text: '//f', startLine: 1, startCharacter: 13 },
+			{ id: 'onComment', text: '//f', startLine: 1, startCharacter: 13, arg: '//f', path: ['foo'] },
 			{ id: 'onLiteralValue', text: '"bar"', startLine: 2, startCharacter: 0, arg: 'bar', path: ['foo'] },
 			{ id: 'onObjectEnd', text: '}', startLine: 2, startCharacter: 6 },
 		]);

@@ -285,7 +285,7 @@ export interface JSONVisitor {
 	/**
 	 * When comments are allowed, invoked when a line or block comment is encountered. The offset and length represent the location of the comment.
 	 */
-	onComment?: (offset: number, length: number, startLine: number, startCharacter: number) => void;
+	onComment?: (content: string, offset: number, length: number, startLine: number, startCharacter: number, pathSupplier: () => JSONPath) => void;
 
 	/**
 	 * Invoked on an error.

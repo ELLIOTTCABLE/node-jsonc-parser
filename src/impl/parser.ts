@@ -410,7 +410,7 @@ export function visit(text: string, visitor: JSONVisitor, options: ParseOptions 
 		onArrayEnd = toNoArgVisit(visitor.onArrayEnd),
 		onLiteralValue = toOneArgVisitWithPath(visitor.onLiteralValue),
 		onSeparator = toOneArgVisit(visitor.onSeparator),
-		onComment = toNoArgVisit(visitor.onComment),
+		onComment = toOneArgVisitWithPath<string>(visitor.onComment),
 		onError = toOneArgVisit(visitor.onError);
 
 	const disallowComments = options && options.disallowComments;
@@ -446,7 +446,8 @@ export function visit(text: string, visitor: JSONVisitor, options: ParseOptions 
 					if (disallowComments) {
 						handleError(ParseErrorCode.InvalidCommentToken);
 					} else {
-						onComment();
+						const value = _scanner.getTokenValue();
+						onComment(value);
 					}
 					break;
 				case SyntaxKind.Unknown:
